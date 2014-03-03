@@ -23,10 +23,10 @@
 #' rcmap("London", "2011-08", "All", c(1000,500), "OpenStreetMap.Mapnik")
 
 rcmap <- function(location = "London Eye", 
-                       period = "2010-12",
-                       type = "All",
-                       map_size = c(1920, 1080), 
-                       provider = "Nokia.normalDay") {
+                  period = "2010-12",
+                  type = "All",
+                  map_size = c(1100, 700), 
+                  provider = "Nokia.normalDay") {
   
   ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## References
@@ -43,43 +43,47 @@ rcmap <- function(location = "London Eye",
   ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
   ## Start timer
-  time_start <- Sys.time()
+  time_start <- proc.time()
   
   ## Make sure the input is valid
   all_year_month <- format(seq(as.Date("2010-12-01"), length=38, by="months"), "%Y-%m")
   
   if (!period %in% all_year_month) {  
+    
+    ## Set period to latest available dataset
+    period <- all_year_month[length(all_year_month)]
+    
     ## Display error message
     cat("[rCrimemap]: The input period is out of range! The latest dataset '",
         period, "' is used instead.\n", sep = "")
     
-    ## Set period to latest available dataset
-    period <- all_year_month[length(all_year_month)]
   }
     
   ## Loading crime data directly from Bitbucket
-  cat("[rCrimemap]: Loading '", period, ".rda' from author's Bitbucket account ... ", sep = "")
+  cat("[rCrimemap]: Downloading '", period, ".rda' from author's Bitbucket account ... ", sep = "")
   con <- url(paste0("http://woobe.bitbucket.org/data/rCrimemap/", period, ".rda"))
   load(con)
   close(con)
   
   ## Stop timer
-  time_stop <- Sys.time()
-  cat(round(time_stop - time_start, 2), "seconds.\n")
-  time_total <- time_stop - time_start
+  time_stop <- proc.time()
+  time_diff <- sum(time_stop - time_start)
+  cat(round(time_diff, 2), "seconds.\n")
+  time_total <- time_diff
+  
   
   ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert data frame into json
   ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
   ## Start timer
-  time_start <- Sys.time()
+  time_start <- proc.time()
   
   ## Display
   cat("[rCrimemap]: Converting raw data into JSON format for Leaflet ... ")
   
   ## Use ggmap::geocode to obtain lat and lon (not foolproof yet - need to improve this later)
-  suppressMessages(latlon <- geocode(paste0(location, " , United Kingdom")))
+  suppressMessages(latlon <- ggmap::geocode(paste0(location, " , United Kingdom")))
   
   ## Locate the nearest police service
   diff_latlon <- as.matrix(abs(crime_data$Latitude - latlon$lat) + abs(crime_data$Longitude - latlon$lon))
@@ -94,28 +98,30 @@ rcmap <- function(location = "London Eye",
   }
   
   ## Convert data
-  data_tbl <- group_by(crime_data[rows_samp,], Latitude, Longitude)
-  data_count <- summarise(data_tbl, n = length(LSOA.name))
-  data_array <- toJSONArray2(na.omit(data_count), json = F, names = F)
-  data_json <- toJSON(data_array)
+  data_tbl <- dplyr::group_by(crime_data[rows_samp,], Latitude, Longitude)
+  data_count <- dplyr::summarise(data_tbl, n = length(LSOA.name))
+  data_array <- rCharts::toJSONArray2(na.omit(data_count), json = F, names = F)
+  data_json <- rjson::toJSON(data_array)
   
   ## Stop timer
-  time_stop <- Sys.time()
-  cat(round(time_stop - time_start, 2), "seconds.\n")
-  time_total <- time_total + (time_stop - time_start)
+  time_stop <- proc.time()
+  time_diff <- sum(time_stop - time_start)
+  cat(round(time_diff, 2), "seconds.\n")
+  time_total <- time_total + time_diff
     
+  
   ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Create Leaflet object with Heat Map
   ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
   ## Start timer
-  time_start <- Sys.time()
+  time_start <- proc.time()
   
   ## Display
   cat("[rCrimemap]: Creating Leaflet with Heat Map ... ")
   
   ## Create Leaflet
-  L2 <- Leaflet$new()
+  L2 <- rMaps::Leaflet$new()
   L2$params$width <- map_size[1]
   L2$params$height <- map_size[2]
   L2$setView(c(latlon$lat, latlon$lon), 10)
@@ -133,9 +139,10 @@ rcmap <- function(location = "London Eye",
                                        data_json))
       
   ## Stop timer
-  time_stop <- Sys.time()
-  cat(round(time_stop - time_start, 2), "seconds.\n")
-  time_total <- time_total + (time_stop - time_start)
+  time_stop <- proc.time()
+  time_diff <- sum(time_stop - time_start)
+  cat(round(time_diff, 2), "seconds.\n")
+  time_total <- time_total + time_diff
   
   
   ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

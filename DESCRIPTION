@@ -8,9 +8,4 @@ Maintainer: Jo-fai Chow <jofai.chow@gmail.com>
 Description: A package for creating interactive crime map using rMaps.
 License: MIT
 Depends:
-    R (>= 3.0.0),
-    rCharts,
-    rMaps,
-    ggmap,
-    dplyr,
-    rjson
+    R (>= 3.0.0)

@@ -3,7 +3,7 @@
 \title{rCrimemap using crime data from data.police.uk}
 \usage{
 rcmap(location = "London Eye", period = "2010-12", type = "All",
-  map_size = c(1920, 1080), provider = "Nokia.normalDay")
+  map_size = c(1100, 700), provider = "Nokia.normalDay")
 }
 \description{
 The next generation of CrimeMap based on rMaps!
