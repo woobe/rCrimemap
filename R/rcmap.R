@@ -1,64 +1,164 @@
-#' rCrimemap using uk crime data in Jan 2014 from data.police.uk
+#' rCrimemap using crime data from data.police.uk
 #' 
-#' The next generation of CrimeMap based on rMaps
+#' The next generation of CrimeMap based on rMaps!
+#' 
+#' Location: Location of interest within England and Wales (e.g. London, Birmingham, Newcastle)
+#' 
+#' period: Specific month of interest between Dec 2010 and Jan 2014 in 'yyyy-mm' format (e.g. 2014-01)
+#' 
+#' type: Specific type of crime or all (e.g. "All", "Anti-social behaviour", "Burglary", "Violent crime")
+#' 
+#' map_size: Resolution of the map (e.g. Full HD = c(1920 x 1080))
+#' 
+#' provider: Base map service provider (e.g. "Nokia.normalDay", "OpenStreetMap.Mapnik") (see http://leaflet-extras.github.io/leaflet-providers/preview/index.html)
+#' 
 #' 
 #' ## Example Usage:
 #' 
-#' rcmap("London Eye", c(1000, 500), "Nokia.normalDay")
+#' rcmap()
 #' 
-#' rcmap("Manchester", c(1920, 1080), "OpenStreetMap.Mapnik") 
+#' rcmap("Newcastle", "2013-01", "All", c(1000,500), "Nokia.normalDay")
 #' 
-
+#' 
+#' rcmap("London", "2011-08", "All", c(1000,500), "OpenStreetMap.Mapnik")
 
 rcmap <- function(location = "London Eye", 
-                  map_size = c(1000, 500), 
-                  provider = "Nokia.normalDay") {
+                       period = "2010-12",
+                       type = "All",
+                       map_size = c(1920, 1080), 
+                       provider = "Nokia.normalDay") {
   
-  ## ===========================================================================
-  ## rCrimemap (Demo)
-  ## Reference:
-  ##    https://github.com/ramnathv/rMaps
-  ##    http://leaflet-extras.github.io/leaflet-providers/preview/index.html
-  ## ===========================================================================
+  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## References
+  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
-  ## Load Data (included with package)
-  df <- readRDS("./data/police_uk_data_2014_01.rds")
+  ## https://github.com/ramnathv/rMaps
+  ## http://data.police.uk
+  ## http://leaflet-extras.github.io/leaflet-providers/preview/index.html
+  ## http://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js
   
-  ## Location
-  suppressMessages(latlon <- geocode(paste0(location, " ,UK")))
+  
+  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Download data (reformatted and stored in author's Bitbucket account)
+  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+  ## Start timer
+  time_start <- Sys.time()
+  
+  ## Make sure the input is valid
+  all_year_month <- format(seq(as.Date("2010-12-01"), length=38, by="months"), "%Y-%m")
+  
+  if (!period %in% all_year_month) {  
+    ## Display error message
+    cat("[rCrimemap]: The input period is out of range! The latest dataset '",
+        period, "' is used instead.\n", sep = "")
+    
+    ## Set period to latest available dataset
+    period <- all_year_month[length(all_year_month)]
+  }
+    
+  ## Loading crime data directly from Bitbucket
+  cat("[rCrimemap]: Loading '", period, ".rda' from author's Bitbucket account ... ", sep = "")
+  con <- url(paste0("http://woobe.bitbucket.org/data/rCrimemap/", period, ".rda"))
+  load(con)
+  close(con)
+  
+  ## Stop timer
+  time_stop <- Sys.time()
+  cat(round(time_stop - time_start, 2), "seconds.\n")
+  time_total <- time_stop - time_start
+  
+  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert data frame into json
+  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+  ## Start timer
+  time_start <- Sys.time()
+  
+  ## Display
+  cat("[rCrimemap]: Converting raw data into JSON format for Leaflet ... ")
+  
+  ## Use ggmap::geocode to obtain lat and lon (not foolproof yet - need to improve this later)
+  suppressMessages(latlon <- geocode(paste0(location, " , United Kingdom")))
   
   ## Locate the nearest police service
-  diff_latlon <- as.matrix(abs(df$Latitude - latlon$lat) + abs(df$Longitude - latlon$lon))
+  diff_latlon <- as.matrix(abs(crime_data$Latitude - latlon$lat) + abs(crime_data$Longitude - latlon$lon))
   diff_latlon[is.na(diff_latlon)] <- 999999
-  service_nearest <- as.character(df$Falls.within[which(diff_latlon == min(diff_latlon))])[1]
+  police_force <- as.character(crime_data$Falls.within[which(diff_latlon == min(diff_latlon))])[1]
   
-  ## Convert
-  rows_samp <- which(df$Falls.within == service_nearest)
-  data_tbl <- as.tbl(df[rows_samp,])
-  data_tbl <- group_by(data_tbl, Latitude, Longitude)
+  ## Identify records of interest
+  if (type == "All") {
+    rows_samp <- which(crime_data$Falls.within == police_force)
+  } else {
+    rows_samp <- which(crime_data$Falls.within == police_force & crime_data$Crime.type == type)
+  }
+  
+  ## Convert data
+  data_tbl <- group_by(crime_data[rows_samp,], Latitude, Longitude)
   data_count <- summarise(data_tbl, n = length(LSOA.name))
   data_array <- toJSONArray2(na.omit(data_count), json = F, names = F)
-  data_json <- rjson::toJSON(data_array)
+  data_json <- toJSON(data_array)
+  
+  ## Stop timer
+  time_stop <- Sys.time()
+  cat(round(time_stop - time_start, 2), "seconds.\n")
+  time_total <- time_total + (time_stop - time_start)
+    
+  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Create Leaflet object with Heat Map
+  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+  ## Start timer
+  time_start <- Sys.time()
+  
+  ## Display
+  cat("[rCrimemap]: Creating Leaflet with Heat Map ... ")
   
   ## Create Leaflet
   L2 <- Leaflet$new()
   L2$params$width <- map_size[1]
   L2$params$height <- map_size[2]
   L2$setView(c(latlon$lat, latlon$lon), 10)
-  L2$tileLayer(provider = provider)   ## Stamen.TonerBackground, OpenStreetMap.Mapnik
+  L2$tileLayer(provider = provider)   ## OpenStreetMap.Mapnik
   L2$marker(c(latlon$lat, latlon$lon), bindPopup = location)
   
   ## Add leaflet-heat plugin. Thanks to Vladimir Agafonkin
   L2$addAssets(jshead = c("http://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js"))
   
-  # Add javascript to modify underlying chart
+  ## Add javascript to modify underlying chart
   L2$setTemplate(afterScript = sprintf("<script>
-                                     var addressPoints = %s
-                                     var heat = L.heatLayer(addressPoints).addTo(map)           
-                                     </script>", 
+                                          var addressPoints = %s
+                                          var heat = L.heatLayer(addressPoints).addTo(map)           
+                                        </script>", 
                                        data_json))
+      
+  ## Stop timer
+  time_stop <- Sys.time()
+  cat(round(time_stop - time_start, 2), "seconds.\n")
+  time_total <- time_total + (time_stop - time_start)
   
-  ## Return the Leaflet Object
+  
+  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Print a Summary
+  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+  cat("\n[rCrimemap]: =======================================================\n")
+  cat("[rCrimemap]: Summary of Data Used\n")
+  cat("[rCrimemap]: =======================================================\n\n")
+  cat("Point of Interest           :", location, "\n")
+  cat("Police Force                :", police_force, "\n")
+  cat("Period of Crime Records     :", period, "\n")
+  cat("Type of Crime Records       :", type, "\n")
+  cat("Total No. of Crime Records  :", dim(data_tbl)[1], "\n")
+  cat("Map Resolution              :", map_size[1], "x", map_size[2], "\n")
+  cat("Duration                    :", round(time_total,2), "seconds.\n\n")
+  
+  
+  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Return Leaflet object
+  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   return(L2)
+  
   
 }

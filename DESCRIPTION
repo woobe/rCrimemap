@@ -12,4 +12,5 @@ Depends:
     rCharts,
     rMaps,
     ggmap,
-    dplyr
+    dplyr,
+    rjson
