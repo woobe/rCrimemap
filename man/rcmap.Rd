@@ -2,8 +2,9 @@
 \alias{rcmap}
 \title{rCrimemap using crime data from data.police.uk}
 \usage{
-rcmap(location = "London Eye", period = "2010-12", type = "All",
-  map_size = c(1100, 700), provider = "Nokia.normalDay")
+rcmap(location = "Ball Brothers EC3R 7PP", period = "2014-01",
+  type = "All", map_size = c(1000, 500), provider = "Nokia.normalDay",
+  zoom = 10)
 }
 \description{
 The next generation of CrimeMap based on rMaps!
@@ -22,17 +23,29 @@ map_size: Resolution of the map (e.g. Full HD = c(1920 x
 1080))
 
 provider: Base map service provider (e.g.
-"Nokia.normalDay", "OpenStreetMap.Mapnik") (see
+"Nokia.normalDay", "MapQuestOpen.OSM", "Stamen.Watercolor")
+(see
 http://leaflet-extras.github.io/leaflet-providers/preview/index.html)
+
+zoom: Zoom level of the map (default = 10)
 
 ## Example Usage:
 
 rcmap()
 
-rcmap("Newcastle", "2013-01", "All", c(1000,500),
+rcmap("London", "2014-01", "All", c(1000,500),
 "Nokia.normalDay")
 
-rcmap("London", "2011-08", "All", c(1000,500),
-"OpenStreetMap.Mapnik")
+rcmap("London", "2014-01", "All", c(1000,500),
+"MapQuestOpen.OSM")
+
+rcmap("London", "2014-01", "Anti-social behaviour",
+c(1000,500), "Nokia.normalDay")
+
+rcmap("Manchester", "2014-01", "All", c(1000,500),
+"MapQuestOpen.OSM")
+
+rcmap("Liverpool", "2014-01", "All", c(1000,500),
+"MapQuestOpen.OSM")
 }
 

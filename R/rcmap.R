@@ -10,23 +10,30 @@
 #' 
 #' map_size: Resolution of the map (e.g. Full HD = c(1920 x 1080))
 #' 
-#' provider: Base map service provider (e.g. "Nokia.normalDay", "OpenStreetMap.Mapnik") (see http://leaflet-extras.github.io/leaflet-providers/preview/index.html)
+#' provider: Base map service provider (e.g. "Nokia.normalDay", "MapQuestOpen.OSM", "Stamen.Watercolor") (see http://leaflet-extras.github.io/leaflet-providers/preview/index.html)
 #' 
+#' zoom: Zoom level of the map (default = 10)
 #' 
 #' ## Example Usage:
 #' 
 #' rcmap()
 #' 
-#' rcmap("Newcastle", "2013-01", "All", c(1000,500), "Nokia.normalDay")
+#' rcmap("London", "2014-01", "All", c(1000,500), "Nokia.normalDay")
 #' 
+#' rcmap("London", "2014-01", "All", c(1000,500), "MapQuestOpen.OSM")
+#'
+#' rcmap("London", "2014-01", "Anti-social behaviour", c(1000,500), "Nokia.normalDay")
 #' 
-#' rcmap("London", "2011-08", "All", c(1000,500), "OpenStreetMap.Mapnik")
+#' rcmap("Manchester", "2014-01", "All", c(1000,500), "MapQuestOpen.OSM")
+#' 
+#' rcmap("Liverpool", "2014-01", "All", c(1000,500), "MapQuestOpen.OSM")
 
-rcmap <- function(location = "London Eye", 
-                  period = "2010-12",
+rcmap <- function(location = "Ball Brothers EC3R 7PP", 
+                  period = "2014-01",
                   type = "All",
-                  map_size = c(1100, 700), 
-                  provider = "Nokia.normalDay") {
+                  map_size = c(1000, 500), 
+                  provider = "Nokia.normalDay",
+                  zoom = 10) {
   
   ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## References
@@ -37,13 +44,20 @@ rcmap <- function(location = "London Eye",
   ## http://leaflet-extras.github.io/leaflet-providers/preview/index.html
   ## http://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js
   
+  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Pre-load Packages
+  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+  suppressMessages(library(rCharts))
+  suppressMessages(library(rMaps))
+  suppressMessages(library(ggmap))
+  suppressMessages(library(dplyr))
+  suppressMessages(library(rjson))
+  
   
   ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Download data (reformatted and stored in author's Bitbucket account)
   ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  
-  ## Start timer
-  time_start <- proc.time()
   
   ## Make sure the input is valid
   all_year_month <- format(seq(as.Date("2010-12-01"), length=38, by="months"), "%Y-%m")
@@ -60,41 +74,40 @@ rcmap <- function(location = "London Eye",
   }
     
   ## Loading crime data directly from Bitbucket
-  cat("[rCrimemap]: Downloading '", period, ".rda' from author's Bitbucket account ... ", sep = "")
-  con <- url(paste0("http://woobe.bitbucket.org/data/rCrimemap/", period, ".rda"))
-  load(con)
-  close(con)
+  if (period == "2014-01") {
+    cat("[rCrimemap]: Loading '", period, ".rda' (included with the rCrimemap package) ...\n", sep = "")
+    load("./data/2014-01.rda")
+  } else {
+    cat("[rCrimemap]: Downloading '", period, ".rda' from author's Bitbucket account ...\n", sep = "")
+    con <- url(paste0("http://woobe.bitbucket.org/data/rCrimemap/", period, ".rda"))
+    load(con)
+    close(con)
+  }
   
-  ## Stop timer
-  time_stop <- proc.time()
-  time_diff <- sum(time_stop - time_start)
-  cat(round(time_diff, 2), "seconds.\n")
-  time_total <- time_diff
-  
-  
+
   ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert data frame into json
   ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
-  ## Start timer
-  time_start <- proc.time()
-  
   ## Display
-  cat("[rCrimemap]: Converting raw data into JSON format for Leaflet ... ")
+  cat("[rCrimemap]: Converting raw data into JSON format for Leaflet ...\n")
   
   ## Use ggmap::geocode to obtain lat and lon (not foolproof yet - need to improve this later)
   suppressMessages(latlon <- ggmap::geocode(paste0(location, " , United Kingdom")))
   
+  ## Approx. Centroid
+  tbl_centroid <- dplyr::group_by(crime_data, Falls.within)
+  centroid <- dplyr::summarise(tbl_centroid, lat = mean(Latitude, na.rm = TRUE), lon = mean(Longitude, na.rm = TRUE))
+  diff_centroid <- data.frame(force = centroid$Falls.within, diff = as.matrix(abs(latlon$lat - centroid$lat)) + as.matrix(abs(latlon$lon - centroid$lon)))
+    
   ## Locate the nearest police service
-  diff_latlon <- as.matrix(abs(crime_data$Latitude - latlon$lat) + abs(crime_data$Longitude - latlon$lon))
-  diff_latlon[is.na(diff_latlon)] <- 999999
-  police_force <- as.character(crime_data$Falls.within[which(diff_latlon == min(diff_latlon))])[1]
+  police_nearest <- as.character(diff_centroid[which(diff_centroid$diff < 0.1),]$force) 
   
   ## Identify records of interest
   if (type == "All") {
-    rows_samp <- which(crime_data$Falls.within == police_force)
+    rows_samp <- which(crime_data$Falls.within %in% police_nearest)
   } else {
-    rows_samp <- which(crime_data$Falls.within == police_force & crime_data$Crime.type == type)
+    rows_samp <- which((crime_data$Falls.within %in% police_nearest) & (crime_data$Crime.type == type))
   }
   
   ## Convert data
@@ -102,30 +115,23 @@ rcmap <- function(location = "London Eye",
   data_count <- dplyr::summarise(data_tbl, n = length(LSOA.name))
   data_array <- rCharts::toJSONArray2(na.omit(data_count), json = F, names = F)
   data_json <- rjson::toJSON(data_array)
-  
-  ## Stop timer
-  time_stop <- proc.time()
-  time_diff <- sum(time_stop - time_start)
-  cat(round(time_diff, 2), "seconds.\n")
-  time_total <- time_total + time_diff
     
   
   ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Create Leaflet object with Heat Map
   ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
-  ## Start timer
-  time_start <- proc.time()
-  
   ## Display
-  cat("[rCrimemap]: Creating Leaflet with Heat Map ... ")
+  cat("[rCrimemap]: Creating Leaflet with Heat Map ...\n")
   
   ## Create Leaflet
   L2 <- rMaps::Leaflet$new()
   L2$params$width <- map_size[1]
   L2$params$height <- map_size[2]
-  L2$setView(c(latlon$lat, latlon$lon), 10)
+  L2$setView(c(latlon$lat, latlon$lon), zoom)
   L2$tileLayer(provider = provider)   ## OpenStreetMap.Mapnik
+  
+  ## Set Marker
   L2$marker(c(latlon$lat, latlon$lon), bindPopup = location)
   
   ## Add leaflet-heat plugin. Thanks to Vladimir Agafonkin
@@ -136,29 +142,21 @@ rcmap <- function(location = "London Eye",
                                           var addressPoints = %s
                                           var heat = L.heatLayer(addressPoints).addTo(map)           
                                         </script>", 
-                                       data_json))
-      
-  ## Stop timer
-  time_stop <- proc.time()
-  time_diff <- sum(time_stop - time_start)
-  cat(round(time_diff, 2), "seconds.\n")
-  time_total <- time_total + time_diff
-  
+                                       data_json))  
   
   ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print a Summary
   ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
   cat("\n[rCrimemap]: =======================================================\n")
-  cat("[rCrimemap]: Summary of Data Used\n")
+  cat("[rCrimemap]: Summary of Crime Data Used and Leaflet Map\n")
   cat("[rCrimemap]: =======================================================\n\n")
   cat("Point of Interest           :", location, "\n")
-  cat("Police Force                :", police_force, "\n")
+  cat("Police Force(s)             :", police_nearest, "\n")
   cat("Period of Crime Records     :", period, "\n")
   cat("Type of Crime Records       :", type, "\n")
   cat("Total No. of Crime Records  :", dim(data_tbl)[1], "\n")
   cat("Map Resolution              :", map_size[1], "x", map_size[2], "\n")
-  cat("Duration                    :", round(time_total,2), "seconds.\n\n")
   
   
   ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
