@@ -8,7 +8,7 @@ This is the next generation of CrimeMap!
 
 ```
 require(devtools)
-install.packages("base64enc", "ggmap", "rjson", "dplyr")
+install.packages(c("base64enc", "ggmap", "rjson", "dplyr"))
 install_github('ramnathv/rCharts@dev')
 install_github('ramnathv/rMaps')
 ```
