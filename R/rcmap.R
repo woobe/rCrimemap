@@ -18,13 +18,11 @@
 #' 
 #' rcmap()
 #' 
-#' rcmap("London", "2014-01", "All", c(1000,500), "Nokia.normalDay")
+#' rcmap("Ball Brothers EC3R 7PP", "2011-08", "All", c(1000,1000), "Nokia.normalDay")
 #' 
-#' rcmap("London", "2014-01", "All", c(1000,500), "MapQuestOpen.OSM")
-#'
-#' rcmap("London", "2014-01", "Anti-social behaviour", c(1000,500), "Nokia.normalDay")
+#' rcmap("London", "2011-08", "Anti-social behaviour", c(1000,500), "Nokia.normalDay")
 #' 
-#' rcmap("Manchester", "2014-01", "All", c(1000,500), "MapQuestOpen.OSM")
+#' rcmap("Manchester", "2014-01", "All", c(1000,1000), "MapQuestOpen.OSM")
 #' 
 #' rcmap("Liverpool", "2014-01", "All", c(1000,500), "MapQuestOpen.OSM")
 
