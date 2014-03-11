@@ -29,7 +29,7 @@
 #' rcmap("Liverpool", "2014-01", "All", c(1000,500), "MapQuestOpen.OSM")
 
 rcmap <- function(location = "Ball Brothers EC3R 7PP", 
-                  period = "2014-01",
+                  period = "2010-12",
                   type = "All",
                   map_size = c(1000, 500), 
                   provider = "Nokia.normalDay",
@@ -74,16 +74,10 @@ rcmap <- function(location = "Ball Brothers EC3R 7PP",
   }
     
   ## Loading crime data directly from Bitbucket
-  if (period == "2014-01") {
-    cat("[rCrimemap]: Loading '", period, ".rda' (included with the rCrimemap package) ...\n", sep = "")
-    load("./data/2014-01.rda")
-  } else {
-    cat("[rCrimemap]: Downloading '", period, ".rda' from author's Bitbucket account ...\n", sep = "")
-    con <- url(paste0("http://woobe.bitbucket.org/data/rCrimemap/", period, ".rda"))
-    load(con)
-    close(con)
-  }
-  
+  cat("[rCrimemap]: Downloading '", period, ".rda' from author's Bitbucket account ...\n", sep = "")
+  con <- url(paste0("http://woobe.bitbucket.org/data/rCrimemap/", period, ".rda"))
+  load(con)
+  close(con)
 
   ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert data frame into json

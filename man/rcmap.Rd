@@ -2,7 +2,7 @@
 \alias{rcmap}
 \title{rCrimemap using crime data from data.police.uk}
 \usage{
-rcmap(location = "Ball Brothers EC3R 7PP", period = "2014-01",
+rcmap(location = "Ball Brothers EC3R 7PP", period = "2010-12",
   type = "All", map_size = c(1000, 500), provider = "Nokia.normalDay",
   zoom = 10)
 }
