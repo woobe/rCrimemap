@@ -1,4 +1,4 @@
-rCrimemap: The Next Generation of CrimeMap!
+rCrimemap: The Next Generation of CrimeMap
 =========
 
 ## Introduction 
@@ -54,13 +54,14 @@ Version | Release Date | Comments
 ```
 rcmap("Ball Brothers EC3R 7PP", "2011-08", "All", c(1000,1000),"Nokia.normalDay")
 ```
-<center>![ball](http://woobe.bitbucket.org/images/github/ball_brothers_animation.gif)</center>
+<center><img src="http://woobe.bitbucket.org/images/github/ball_brothers_animation.gif"></center>
 
 ### LondonR Demo 2
 ```
 rcmap("Manchester", "2014-01", "All", c(1000,1000), "MapQuestOpen.OSM")
 ```
-<center>![ball](http://woobe.bitbucket.org/images/github/manchester_animation.gif)</center>
+<center><img src="http://woobe.bitbucket.org/images/github/manchester_animation.gif"></center>
+
 
 ## Enjoy
 
