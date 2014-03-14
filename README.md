@@ -44,8 +44,8 @@ install_github('woobe/rCrimemap')
 
 Version | Release Date | Comments
 -------|-------|-------
-0.01 | 11-Mar-2014 | Prototype for [LondonR Demo](http://bit.ly/londonr_crimemap). Raw and experimental.
-0.02 | 14-Mar-2014 | Using plyr::ddply instead of dplyr::summarise for one step (dplyr::group_by is unstable for multiple columns at the moment). As a result, it is slower but stable.
+0.0.1 | 11/03/2014 | Prototype for [LondonR Demo](http://bit.ly/londonr_crimemap). Raw and experimental.
+0.0.2 | 14/03/2014 | Using **plyr::ddply** instead of **dplyr::summarise** for one step (**dplyr::group_by** is unstable for multiple columns at the moment). As a result, it is slower but stable.
 
 
 ## Example Usage
