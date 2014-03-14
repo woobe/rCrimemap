@@ -1,8 +1,8 @@
 Package: rCrimemap
 Type: Package
 Title: rCrimemap: The Next Generation of CrimeMap
-Version: 0.0.1
-Date: 2014-03-11
+Version: 0.0.2
+Date: 2014-03-14
 Author: Jo-fai Chow
 Maintainer: Jo-fai Chow <jofai.chow@gmail.com>
 Description: A package for creating interactive crime map based on data in England, Wales and Northern Ireland.
