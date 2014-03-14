@@ -48,19 +48,79 @@ Version | Release Date | Comments
 0.0.2 | 14/03/2014 | Using **plyr::ddply** instead of **dplyr::summarise** for one step (**dplyr::group_by** is unstable for multiple columns at the moment). As a result, it is slower but stable.
 
 
-## Example Usage
+## Example Usage of 'rcmap()'
 
-### LondonR Demo 1
+You can create interactive crime map using the function **rcmap()**. The function has the following arguments:  
+
 ```
+rcmap(location = "Ball Brothers EC3R 7PP", ## LondonR venue since 2013
+      period = "2010-12",                  ## reformatted data from 2010-12 to 2014-01
+      type = "All",                        ## type of crimes
+      map_size = c(1000, 500),             ## resolution of map in pixel
+      provider = "Nokia.normalDay",        ## base map provider
+      zoom = 10)                           ## zoom level
+```
+
+## LondonR Demo 1
+
+```
+library(rCrimemap)
 rcmap("Ball Brothers EC3R 7PP", "2011-08", "All", c(1000,1000),"Nokia.normalDay")
 ```
-<center><img src="http://woobe.bitbucket.org/images/github/ball_brothers_animation.gif"></center>
 
-### LondonR Demo 2
+### Text Output:
+```
+[rCrimemap]: Downloading '2011-08.rda' from author's Bitbucket account ...
+[rCrimemap]: Converting raw data into JSON format for Leaflet ...
+[rCrimemap]: Creating Leaflet with Heat Map ...
+
+[rCrimemap]: Summary of Crime Data Used and Leaflet Map ...
+
+Point of Interest           : Ball Brothers EC3R 7PP 
+Nearest Police Force(s)     : City of London Police Metropolitan Police Service 
+Period of Crime Records     : 2011-08 
+Type of Crime Records       : All 
+Total No. of Crime Records  : 109653 
+Map Resolution              : 1000 x 1000
+```
+
+### Interactive Map Output in RStudioIDE:
+
+**Note**: use the export to browser button (top left of map) to view the map in a browser.  
+
+<center><img src="http://woobe.bitbucket.org/images/github/rCrimemap_RStudioIDE.jpg"></center>
+
+
+### Zooming:
+<center><img src="http://woobe.bitbucket.org/images/github/ball_brothers_animation.gif"></center>
+  
+
+## LondonR Demo 2
+
 ```
 rcmap("Manchester", "2014-01", "All", c(1000,1000), "MapQuestOpen.OSM")
 ```
+
+### Text Output:
+
+```
+[rCrimemap]: Downloading '2014-01.rda' from author's Bitbucket account ...
+[rCrimemap]: Converting raw data into JSON format for Leaflet ...
+[rCrimemap]: Creating Leaflet with Heat Map ...
+
+[rCrimemap]: Summary of Crime Data Used and Leaflet Map ...
+
+Point of Interest           : Manchester 
+Nearest Police Force(s)     : Greater Manchester Police Cheshire Constabulary Lancashire Constabulary 
+Period of Crime Records     : 2014-01 
+Type of Crime Records       : All 
+Total No. of Crime Records  : 43122 
+Map Resolution              : 1000 x 1000 
+```
+
+### Zooming:
 <center><img src="http://woobe.bitbucket.org/images/github/manchester_animation.gif"></center>
+
 
 
 ## Enjoy
