@@ -4,7 +4,7 @@
 \usage{
 rcmap(location = "Ball Brothers EC3R 7PP", period = "2010-12",
   type = "All", map_size = c(1000, 500), provider = "Nokia.normalDay",
-  zoom = 10)
+  zoom = 10, nearest = 2)
 }
 \description{
 The next generation of CrimeMap based on rMaps!

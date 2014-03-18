@@ -31,24 +31,10 @@ rcmap <- function(location = "Ball Brothers EC3R 7PP", ## LondonR venue since 20
                   type = "All",                        ## type of crimes
                   map_size = c(1000, 500),             ## resolution of map
                   provider = "Nokia.normalDay",        ## base map provider
-                  zoom = 10                            ## zoom level
+                  zoom = 10,                           ## zoom level
+                  nearest = 2                          ## number of nearest police forces
                   )     
   {
-  
-  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Temp
-  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  
-  if (FALSE) {
-    location = "Reading" ## LondonR venue since 2013
-    period = "2010-12"                  ## reformatted data from 2010-12 to 2014-01
-    type = "All"                        ## type of crimes
-    map_size = c(1000, 500)             ## resolution of map
-    provider = "Nokia.normalDay"        ## base map provider
-    zoom = 10                           ## zoom level
-  }
-  
-  
   
   ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## References
@@ -112,18 +98,10 @@ rcmap <- function(location = "Ball Brothers EC3R 7PP", ## LondonR venue since 20
   diff_centroid <- data.frame(force = centroid$Falls.within, diff = as.matrix(abs(latlon$lat - centroid$lat)) + as.matrix(abs(latlon$lon - centroid$lon)))
     
   ## Locate 2 nearest police forces
-  diff_threshold <- min(diff_centroid$diff) * 20
   diff_centroid <- diff_centroid[order(diff_centroid$diff), ]
-  diff_centroid <- diff_centroid[which(diff_centroid$diff < diff_threshold), ]
-  if (dim(diff_centroid)[1] > 3) diff_centroid <- diff_centroid[1:3, ]
+  diff_centroid <- diff_centroid[1:nearest, ]
   police_nearest <- as.character(diff_centroid$force) 
-  
-  ## Check number of records
-  if (length(police_nearest) > 1) {    
-    rows_check <- length(which(crime_data$Falls.within %in% police_nearest))
-    if (rows_check > 200000L) police_nearest <- police_nearest[1]
-  }
-  
+    
   ## Identify records of interest
   if (type == "All") {
     rows_samp <- which(crime_data$Falls.within %in% police_nearest)
@@ -137,11 +115,18 @@ rcmap <- function(location = "Ball Brothers EC3R 7PP", ## LondonR venue since 20
   ## data_tbl <- group_by(crime_data[rows_samp,], Latitude, Longitude)
   ## data_count <- dplyr::summarise(data_tbl, n = length(LSOA.name))
   
+  df <- crime_data[rows_samp,]
+  
+  df %.%
+    group_by(Latitude, Longitude) %.%
+    summarise(n = length(LSOA.code))
+  
+  
+  
   ## ~~~~~~~~~~ Using ddply in plyr for now ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   data_count <- ddply(.data = crime_data[rows_samp, ],
                       .variables = .(Latitude, Longitude),
-                      .fun = summarize, n = length(LSOA.name))
-  
+                      .fun = summarize, n = length(LSOA.name))  
   data_array <- rCharts::toJSONArray2(na.omit(data_count), json = F, names = F)
   data_json <- rjson::toJSON(data_array)
     

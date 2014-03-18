@@ -46,6 +46,7 @@ Version | Release Date | Comments
 -------|-------|-------
 0.0.1 | 11/03/2014 | Prototype for [LondonR Demo](http://bit.ly/londonr_crimemap). Raw and experimental.
 0.0.2 | 14/03/2014 | Using **plyr::ddply** instead of **dplyr::summarise** for one step (**dplyr::group_by** is unstable for multiple columns at the moment). As a result, it is slower but stable.
+0.0.3 | 18/03/2014 | Added function 'rcmap_quick()' for quicker map generation using reformatted JSON data of **ALL crimes**. Support period from 2010-12 to 2011-12 (I will continue to convert the rest and make them available in next version).
 
 
 ## Example Usage of 'rcmap()'
@@ -65,7 +66,8 @@ rcmap(location = "Ball Brothers EC3R 7PP", ## LondonR venue since 2013
 
 ```
 library(rCrimemap)
-rcmap("Ball Brothers EC3R 7PP", "2011-08", "All", c(1000,1000),"Nokia.normalDay")
+m1 <- rcmap("Ball Brothers EC3R 7PP", "2011-08", "All", c(1000,1000),"Nokia.normalDay")
+m1
 ```
 
 ### Text Output:
@@ -98,7 +100,8 @@ Map Resolution              : 1000 x 1000
 ## LondonR Demo 2
 
 ```
-rcmap("Manchester", "2014-01", "All", c(1000,1000), "MapQuestOpen.OSM")
+m2 <- rcmap("Manchester", "2014-01", "All", c(1000,1000), "MapQuestOpen.OSM")
+m2
 ```
 
 ### Text Output:
@@ -120,6 +123,22 @@ Map Resolution              : 1000 x 1000
 
 ### Zooming:
 <center><img src="http://woobe.bitbucket.org/images/github/manchester_animation.gif"></center>
+
+
+
+## Example Usage of 'rcmap_quick()'
+
+Create an interactive crime map of ALL CRIMES using the function **rcmap_quick()**.  
+
+**Note**: it only supports period from 2010-12 to 2011-12 for now (I will continue to convert the rest and make them available in next version).  
+
+
+```
+m_quick <- rcmap_quick(period = "2010-12", map_size = c(800, 800), 
+                       provider = "Nokia.normalDay", zoom = 7)
+m_quick
+```
+
 
 
 
