@@ -10,7 +10,7 @@ rCrimemap: The Next Generation of CrimeMap
 
 *(based on my useR! conference abstract)*  
 
-The maturality and extensive graphical abilities of *R* and its packages make *R* an excellent choice for professional data visualisation. Previous work has shown that it is possible to combine the functionality in packages **ggmap**, **ggplot2**, **shiny** and **shinyapps** for crime data visualization in the form of a web application named **'CrimeMap'** ([Chow, 2013](http://bit.ly/bib_crimemap)). The web application is user-friendly and highly customizable. It allows users to create and customize spatial visualization in a few clicks without prior knowledge in *R* (see screenshot below). Moreover, **shiny** automatcially adjusts the layout **'CrimeMap'**  for best viewing experience on desktop computers, tablets and smartphones.
+The maturality and extensive graphical abilities of *R* and its packages make *R* an excellent choice for professional data visualisation. Previous work has shown that it is possible to combine the functionality in packages **ggmap**, **ggplot2**, **shiny** and **shinyapps** for crime data visualization in the form of a web application named **'CrimeMap'** ([Chow, 2013](http://bit.ly/bib_crimemap)). The web application is user-friendly and highly customizable. It allows users to create and customize spatial visualization in a few clicks without prior knowledge in *R* (see screenshot below). Moreover, **shiny** automatcially adjusts the layout of **'CrimeMap'**  for best viewing experience on desktop computers, tablets and smartphones.
 
 <center>![ball](http://woobe.bitbucket.org/images/github/milestone_2013_11.jpg)</center>
 
