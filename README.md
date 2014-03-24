@@ -1,11 +1,10 @@
 rCrimemap: The Next Generation of CrimeMap
 =========
 
-### Note that **rCrimemap** is still raw and experimental. Check out my blog ["Blend It Like a Bayesian!"](http://bit.ly/blenditbayes) for latest updates.
+- Note that **rCrimemap** is still raw and experimental. Check out my blog [**"Blend It Like a Bayesian!"**](http://bit.ly/blenditbayes) for latest updates. 
+- See my [**LondonR presentation**](http://bit.ly/londonr_crimemap) for the history and motivation behind developing **'CrimeMap'** and **rCrimemap**.
 
-
-### History of CrimeMap and rCrimemap - see my LondonR presentation [Link](http://bit.ly/londonr_crimemap)
-
+------
 
 ## Introduction 
 
@@ -15,7 +14,7 @@ The maturality and extensive graphical abilities of *R* and its packages make *R
 
 <center>![ball](http://woobe.bitbucket.org/images/github/milestone_2013_11.jpg)</center>
 
-Following the release of **rMaps** ([Vaidyanathan, 2014](https://github.com/ramnathv/rMaps)), Chow built upon the original 'CrimeMap' and created a new package **rCrimemap** ([Chow, 2014](http://bit.ly/rCrimemap)). Leveraging the power of *JavaScript* mapping libraries such as 'leaflet' via **rMaps**, **rCrimemap** allows users to create an interactive crime map in *R* with intuitive map controls using only one line of code. Both zooming and navigation are similar to what ones would expect from using a typical digital map (see screenshots below).  
+Following the release of **rCharts** ([Vaidyanathan, 2013](http://rcharts.io/))and **rMaps** ([Vaidyanathan, 2014](https://github.com/ramnathv/rMaps)), Chow built upon the original **'CrimeMap'** and created a new package **rCrimemap** ([Chow, 2014](http://bit.ly/rCrimemap)). Leveraging the power of *JavaScript* mapping libraries such as 'leaflet' via **rMaps**, **rCrimemap** allows users to create an interactive crime map in *R* with intuitive map controls using only one line of code. Both zooming and navigation are similar to what ones would expect from using a typical digital map (see screenshots below).  
 
 <center><img src="http://3.bp.blogspot.com/-TAJdmlqeIfE/Uyw6_eq1fCI/AAAAAAAAAfY/B9fCjp_GtLI/s1600/rCrimemap_test.gif"></center>
 
