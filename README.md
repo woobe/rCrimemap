@@ -4,7 +4,7 @@ rCrimemap: The Next Generation of CrimeMap
 ### Note that **rCrimemap** is still raw and experimental. Check out my blog ["Blend It Like a Bayesian!"](http://bit.ly/blenditbayes) for latest updates.
 
 
-### History of CrimeMap and rCrimemap - see my LondonR presentation [Link](http://londonr_crimemap)
+### History of CrimeMap and rCrimemap - see my LondonR presentation [Link](http://bit.ly/londonr_crimemap)
 
 
 ## Introduction 
