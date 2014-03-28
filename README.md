@@ -1,12 +1,11 @@
 rCrimemap: The Next Generation of CrimeMap
 =========
 
-- Note that **rCrimemap** is still raw and experimental. Check out my blog [**"Blend it Like a Bayesian!"**](http://bit.ly/blenditbayes) for latest updates. 
+<center>![showcase](http://woobe.bitbucket.org/images/github/rCrimemap_showcase.png)</center>
+
+- Note that **rCrimemap** is still raw and experimental. Check out my blog [**"Blend It Like a Bayesian!"**](http://bit.ly/blenditbayes) for latest updates. 
 - See my [**LondonR presentation**](http://bit.ly/londonr_crimemap) for the history and motivation behind developing **'CrimeMap'** and **rCrimemap**.
 - This is essentially a self-learning project. **I am only doing this for fun!**
-
-
-------
 
 ## Introduction 
 
@@ -21,8 +20,6 @@ Following the release of **rCharts** ([Vaidyanathan, 2013](http://rcharts.io/)) 
 <center><img src="http://3.bp.blogspot.com/-TAJdmlqeIfE/Uyw6_eq1fCI/AAAAAAAAAfY/B9fCjp_GtLI/s1600/rCrimemap_test.gif"></center>
 
 The availability of these packages means *R* developers can now easily overlay both graphcial and numerical results from complex statistical analysis with maps to create professional and insightful spatial visualization. This is particularly useful for effective communication and decision making.  
-
-------
 
 ## Prerequisites
 
@@ -42,14 +39,10 @@ install_github('ramnathv/rMaps')
 install_github('woobe/rCrimemap')
 ```
 
-------
-
 ## Credits
 
 * [rMaps by Ramnath Vaidyanathan](https://github.com/ramnathv/rMaps)
 * [Leaflet Heat Maps](http://rmaps.github.io/blog/posts/leaflet-heat-maps/index.html)
-
-------
 
 ## Changes
 
@@ -60,7 +53,6 @@ Version | Release Date | Comments
 0.0.3 | 18/03/2014 | Added function 'rcmap_quick()' for quicker map generation using reformatted JSON data of **ALL crimes**. Support period from 2010-12 to 2011-12 (I will continue to convert the rest and make them available in next version).
 0.0.3 | 24/03/2014 | Not a package update. All reformatted crime data (2010-12 to 2014-01) in JSON format has been uploaded to Bitbucket. Use **rcmap_quick()** function to take advantages of these datasets. 
 
-------
 
 ## Using 'rcmap_quick()' to create self-contained interactive crime map!
 
@@ -89,9 +81,6 @@ m_quick$save('mymap.html', cdn = TRUE)
 1. rCrimemap (2014-01, 1900 x 1060) [Link](http://bit.ly/1jbmINy)
 2. rCrimemap (2014-01, 940 x 620) [Link](http://bit.ly/1jbn8DR)
 
-
-------
-  
 ## Using 'rcmap()'
 
 ### Note: This was my first attempt. The wrapper uses 'plyr' instead of 'dplyr' so it can be really slow. Try rcmap_quick() first :)
