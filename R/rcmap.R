@@ -2,35 +2,30 @@
 #' 
 #' The next generation of CrimeMap based on rMaps!
 #' 
-#' Location: Location of interest within England and Wales (e.g. London, Birmingham, Newcastle)
+#' @param location Location of interest within England and Wales (e.g. London, Birmingham, Newcastle)
+#' @param period Specific month of interest between Dec 2010 and Jan 2014 in 'yyyy-mm' format (e.g. 2014-01)
+#' @param type Specific type of crime or all (e.g. "All", "Anti-social behaviour", "Burglary", "Violent crime")
+#' @param map_size Resolution of the map (e.g. Full HD = c(1920 x 1080))
+#' @param provider: Base map service provider (e.g. "OpenStreetMap.BlackAndWhite") (see http://leaflet-extras.github.io/leaflet-providers/preview/index.html)
+#' @param zoom Zoom level of the map
+#' @param nearest number of nearest police forces (for data collection)
 #' 
-#' period: Specific month of interest between Dec 2010 and Jan 2014 in 'yyyy-mm' format (e.g. 2014-01)
-#' 
-#' type: Specific type of crime or all (e.g. "All", "Anti-social behaviour", "Burglary", "Violent crime")
-#' 
-#' map_size: Resolution of the map (e.g. Full HD = c(1920 x 1080))
-#' 
-#' provider: Base map service provider (e.g. "Nokia.normalDay", "MapQuestOpen.OSM", "Stamen.Watercolor") (see http://leaflet-extras.github.io/leaflet-providers/preview/index.html)
-#' 
-#' zoom: Zoom level of the map (default = 10)
-#' 
-#' ## Example Usage:
-#' 
+#'@examples
+#' ## Create a heatmap with default settings
 #' rcmap()
 #' 
-#' rcmap("Ball Brothers EC3R 7PP", "2011-08", "All", c(1000,1000), "Nokia.normalDay")
-#' 
-#' rcmap("London", "2011-08", "Anti-social behaviour", c(1000,500), "Nokia.normalDay")
-#' 
+#' ## Be more specific
+#' rcmap("Ball Brothers EC3R 7PP", "2011-08", "All", c(1000,1000))
+#' rcmap("London", "2011-08", "Anti-social behaviour", c(1000,500))
 #' rcmap("Manchester", "2014-01", "All", c(1000,1000), "MapQuestOpen.OSM")
-#' 
 #' rcmap("Liverpool", "2014-01", "All", c(1000,500), "MapQuestOpen.OSM")
+#' 
 
 rcmap <- function(location = "Ball Brothers EC3R 7PP", ## LondonR venue since 2013
                   period = "2010-12",                  ## reformatted data from 2010-12 to 2014-01
                   type = "All",                        ## type of crimes
                   map_size = c(1000, 500),             ## resolution of map
-                  provider = "Nokia.normalDay",        ## base map provider
+                  provider = "OpenStreetMap.BlackAndWhite",        ## base map provider
                   zoom = 10,                           ## zoom level
                   nearest = 2                          ## number of nearest police forces
                   )     
@@ -44,19 +39,6 @@ rcmap <- function(location = "Ball Brothers EC3R 7PP", ## LondonR venue since 20
   ## http://data.police.uk
   ## http://leaflet-extras.github.io/leaflet-providers/preview/index.html
   ## http://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js
-  
-  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Pre-load Packages
-  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  
-  suppressMessages(library(rCharts))
-  suppressMessages(library(rMaps))
-  suppressMessages(library(ggmap))
-  suppressMessages(library(plyr))
-  suppressMessages(library(dplyr))
-  suppressMessages(library(rjson))
-  
-  
   
   ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Download data (reformatted and stored in author's Bitbucket account)

@@ -1,17 +1,25 @@
-#' rCrimemap using reformatted JSON data - a faster version of rcmap()
+#' rCrimemap using pre-processed JSON data - a faster version of rcmap()
+#'  
+#' @param period Specific month of interest between Dec 2010 and Jan 2014 in 'yyyy-mm' format (e.g. 2014-01)
+#' @param map_size Resolution of the map (e.g. Full HD = c(1920 x 1080))
+#' @param map_center Center of the map, Lichfield is approx. center of England & Wales
+#' @param provider: Base map service provider (e.g. "OpenStreetMap.BlackAndWhite") (see http://leaflet-extras.github.io/leaflet-providers/preview/index.html)
+#' @param zoom Zoom level of the map
+#' @param marker Place a marker at the center? (default = NULL)
 #' 
+#'@examples
+#' ## Create a heatmap with default settings
+#' rcmap_quick()
 #' 
-#' ## Example Usage:
-#' 
-#' m_quick <- rcmap_quick()
-#' m_quick
+#' ## Be more specific
+#' rcmap_quick(period = "2014-01", map_size = c(1920,1080), provider = "MapQuestOpen.OSM")
 #' 
 
-rcmap_quick <- function(period = "2010-12",                  ## reformatted data from 2010-12 to 2014-01
-                        map_size = c(800, 800),              ## resolution of map
+rcmap_quick <- function(period = "2014-01",                  ## reformatted data from 2010-12 to 2014-01
+                        map_size = c(960, 500),              ## resolution of map
                         map_center = "Lichfield",            ## adjust center of the map, Lichfield is approx. center of England & Wales
-                        provider = "Nokia.normalDay",        ## base map provider
-                        zoom = 7,                            ## start from 7
+                        provider = "OpenStreetMap.BlackAndWhite",        ## base map provider
+                        zoom = 6,                            ## start from 7
                         marker = NULL)                       ## no marker unless specified
 {
     
@@ -23,16 +31,6 @@ rcmap_quick <- function(period = "2010-12",                  ## reformatted data
   ## http://data.police.uk
   ## http://leaflet-extras.github.io/leaflet-providers/preview/index.html
   ## http://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js
-  
-  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Pre-load Packages
-  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  
-  suppressMessages(library(rCharts))
-  suppressMessages(library(rMaps))
-  suppressMessages(library(ggmap))
-  suppressMessages(library(rjson))  
-  
   
   ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Download data (reformatted and stored in author's Bitbucket account)
